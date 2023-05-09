@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+      }
+    </style>
+    <title>Laporan PJ</title>
+  </head>
+  <body>
+     <div
+    class="min-h-screen"
+    style="background-image: linear-gradient(-115deg, #0051f2, #fefefe)"
+  >
+    <div class="container backdrop-blur-lg mx-auto py-24">
+      <div
+        class="flex w-8/12 bg-indigo-500 rounded-2xl mx-auto shadow-md overflow-hidden"
+      >
+<!-- Todolist -->
+      <div
+          class="w-2/5 pl-7">
+          <h1 class="text-slate-100 font-extrabold text-2xl mt-3 leading-tight px-5 py-1 ">
+            Welcome To Kamar Bedah
+          </h1>
+          <p class="text-slate-100 px-1 pl-5 font-light font-mono text-sm ">
+           "Working wholeheartedly, we deliver with excellence."
+          </p>
+          <div class="container mx-auto px-4 py-8">
+            <h1 class="text-2xl font-bold mb-4 text-yellow-100 ">My Todo List</h1>
+            <form id="todo-form">
+              <div class="flex mb-4">
+                <input
+                  type="text"
+                  class="w-full px-4 py-2 mr-2 border rounded-lg"
+                  placeholder="Add new task"
+                  id="todo-input"
+                />
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Add</button>
+              </div>
+            </form>
+            <ul id="todo-list"></ul>
+          </div>
+        </div>
+        <!-- Form input -->
+        <div class="w-1/2">
+            <form action="" name="submit-to-google-sheet">
+          <label for="name" class="font-medium mb-2 mt-3 pl-11 ">Nama Perawat</label>
+          <div class="relative pl-11">
+            <select
+              id="name"
+              name="Nama"
+              class="block appearance-none w-full py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="">Pilih nama</option>
+              <option value="Sekar">Ns.Vero Sekar S.kep</option>
+              <option value="Wiwik">Ns.Wiwik S.Kep</option>
+              <option value="Mardianto">Ns.Mardianto S.kep</option>
+              <option value="Rosalina">Ns.Rosalina S.kep</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <!-- <svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path d="M7 10l5 5 5-5z" /></svg> -->
+            </div>
+          <label for="name" class="font-medium mb-2 mt-5">Dinas</label>
+          <div class="relative">
+            <select
+              id="name"
+              name="Dinas"
+              class="block appearance-none w-full py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            >
+              <option value="">Pilih Dinas</option>
+              <option value="Pagi">Pagi</option>
+              <option value="Siang">Siang</option>
+              <option value="Malam">Malam</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+              <!-- <svg class="fill-current h-4 w-4" viewBox="0 0 20 20"><path d="M7 10l5 5 5-5z" /></svg> -->
+            </div>
+          </div>
+          <div class="w-full mt-3 mb-2 ">
+            <label for="message" class="block font-medium mb-2">Penundaan Operasi</label>
+            <textarea
+              id="message"
+              name="Penundaan"
+              class="block w-full px-3 py-2 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+               rows="1"
+            ></textarea>
+          </div>
+          <div class="w-full mt-3 mb-4 ">
+            <label for="message" class="block font-medium mb-2">Laporan Dinas</label>
+            <textarea
+              id="message"
+              name="Laporan"
+              class="block w-full px-3 py-2 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+               rows="4"
+            ></textarea>
+          </div>
+        </form>
+        <button class="border bg-blue-500 py-2 px-4 rounded-md text-slate-100 hover:bg-blue-300 mb-5" type="submit">Send</button>
+        </div>
+      </div>
+    </div>
+    <!-- Script -->
+
+    <script>
+const form = document.getElementById("todo-form");
+const input = document.getElementById("todo-input");
+const list = document.getElementById("todo-list");
+
+// membuat fungsi untuk menghapus tugas dari daftar
+function removeTodo() {
+  const todo = this.event.currentTarget.parentNode.parentNode;
+  list.removeChild(todo);
+  saveTodoList();
+}
+
+// membuat fungsi untuk menandai tugas sebagai selesai atau tidak selesai
+function toggleCompleted(checkbox) {
+  const todo = checkbox.parentNode;
+  if (checkbox.checked) {
+    todo.classList.add("completed");
+  } else {
+    todo.classList.remove("completed");
+  }
+  saveTodoList();
+}
+
+// membuat fungsi untuk menambahkan tugas ke daftar
+function addTodo() {
+  if (input.value.trim() !== "") {
+    const todo = document.createElement("li");
+    todo.innerHTML = `
+      <div class="flex items-center mb-4">
+        <input type="checkbox" class="mr-2" onchange="toggleCompleted(this)">
+        <span class="text-lg">${input.value.trim()}</span>
+        <button class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 ml-auto rounded-lg" onclick="removeTodo()">X</button>
+      </div>
+    `;
+    list.appendChild(todo);
+    input.value = "";
+
+    // simpan tugas ke localStorage
+    saveTodoList();
+  }
+}
+
+// membuat fungsi untuk menyimpan daftar tugas ke dalam localStorage
+function saveTodoList() {
+  const todos = list.innerHTML;
+  localStorage.setItem("todos", todos);
+}
+
+// membuat fungsi untuk memuat daftar tugas dari localStorage
+function loadTodoList() {
+  const todos = localStorage.getItem("todos");
+  if (todos) {
+    list.innerHTML = todos;
+    const deleteButtons = list.querySelectorAll(".bg-red-500");
+    for (let i = 0; i < deleteButtons.length; i++) {
+      deleteButtons[i].addEventListener("click", removeTodo);
+    }
+    const checkboxes = list.querySelectorAll("input[type='checkbox']");
+    for (let i = 0; i < checkboxes.length; i++) {
+      checkboxes[i].addEventListener("change", function() {
+        toggleCompleted(this);
+      });
+    }
+  }
+}
+
+// memuat daftar tugas saat halaman dimuat ulang
+loadTodoList();
+
+// menambahkan event listener untuk menangani pengiriman formulir
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  addTodo();
+});
+
+      </script>
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz6J6MWM-8Z8-toLf-bV9vs8ze2QDtS3EiODgqxPHNMEzVPd33TmvOXrBReKPRqtZcv/exec'
+        const forms = document.forms['submit-to-google-sheet']
+      
+        form.addEventListener('submit', e => {
+          e.preventDefault()
+          fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            .then(response => {
+                form.reset();
+                console.log('Success!', response)})
+            .catch(error => console.error('Error!', error.message))
+        })
+      </script>
+  </body>
+</html>
